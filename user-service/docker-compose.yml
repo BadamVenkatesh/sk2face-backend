@@ -5,10 +5,10 @@ services:
     image: mysql:8.3.0
     container_name: sk2face-user-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: root123
       MYSQL_DATABASE: sk2face_user
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: sk2face
+      MYSQL_PASSWORD: sk2face123
     ports:
       - "3306:3306"
     volumes:
