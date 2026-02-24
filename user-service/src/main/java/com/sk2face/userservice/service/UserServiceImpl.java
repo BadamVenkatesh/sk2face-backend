@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity();
         user.setEmployeeId(request.getEmployeeId());
         user.setFullName(request.getFullName());
-        user.setOfficialEmail(request.getOfficalEmail());
+        user.setOfficialEmail(request.getOfficialEmail());
         user.setDesignation(request.getDesignation());
         user.setDepartmentName(request.getDepartmentName());
         user.setPhoneNumber(request.getPhoneNumber());

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Component
+@Component("customResponseBuilder")
 public class ResponseBuilder {
 
     public <T> ApiResponse<T> success(T data) {
