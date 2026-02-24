@@ -1,0 +1,23 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: sk2face-user-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/sk2face_user
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+management:
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
