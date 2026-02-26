@@ -1,0 +1,125 @@
+version: '3.8'
+
+services:
+
+  # ---------------------------
+  # USER DATABASE
+  # ---------------------------
+#  user-mysql:
+#    image: mysql:8.3.0
+#    container_name: sk2face-user-mysql
+#    restart: always
+#    environment:
+#      MYSQL_ROOT_PASSWORD: root123
+#      MYSQL_DATABASE: sk2face_user
+#      MYSQL_USER: sk2face
+#      MYSQL_PASSWORD: sk2face123
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - user-mysql-data:/var/lib/mysql
+#    networks:
+#      - sk2face-network
+
+  # ---------------------------
+  # MATCH DATABASE
+  # ---------------------------
+  match-mysql:
+    image: mysql:8.3.0
+    container_name: sk2face-match-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: sk2face_match
+      MYSQL_USER: sk2face
+      MYSQL_PASSWORD: sk2face123
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sk2face", "-psk2face123" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - match-mysql-data:/var/lib/mysql
+    networks:
+      - sk2face-network
+
+  # ---------------------------
+  # EUREKA REGISTRY
+  # ---------------------------
+  registry:
+#    build: ./sk2face-eureka-server
+#    container_name: sk2face-registry
+    image: sk2face-backend-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - sk2face-network
+
+  # ---------------------------
+  # USER SERVICE
+  # ---------------------------
+#  user-service:
+#    build: ./user-service
+#    container_name: sk2face-user-service
+#    depends_on:
+#      - user-mysql
+#      - registry
+#    ports:
+#      - "8082:8082"
+#    networks:
+#      - sk2face-network
+
+  # ---------------------------
+  # MATCH SERVICE
+  # ---------------------------
+  match-service:
+#    build: ./match-service
+    image: sk2face-backend-match-service
+#    container_name: sk2face-match-service
+    depends_on:
+      - match-mysql
+      - registry
+    ports:
+      - "8083:8083"
+    networks:
+      - sk2face-network
+
+  # ---------------------------
+  # API GATEWAY
+  # ---------------------------
+  api-gateway:
+    image: sk2face-backend-api-gateway
+#    container_name: sk2face-api-gateway
+    depends_on:
+      - registry
+    ports:
+      - "8080:8080"
+    networks:
+      - sk2face-network
+
+    # ---------------------------
+  # ML SERVICE
+  # ---------------------------
+  ml-service:
+    image: sk2face-backend-ml-service
+#    container_name: sk2face-ml-service
+    depends_on:
+      - registry
+    ports:
+      - "9090:9090"
+    volumes:
+      - /home/badam/Downloads/tempi:/app/data
+    networks:
+      - sk2face-network
+
+
+networks:
+  sk2face-network:
+    driver: bridge
+
+volumes:
+  user-mysql-data:
+  match-mysql-data:

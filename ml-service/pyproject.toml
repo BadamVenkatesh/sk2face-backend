@@ -1,0 +1,19 @@
+[project]
+name = "ml-service"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.133.1",
+    "httpx>=0.28.1",
+    "numpy>=2.4.2",
+    "opencv-python-headless>=4.13.0.92",
+    "pillow>=12.1.1",
+    "py-eureka-client>=0.13.3",
+    "pydantic>=2.12.5",
+    "pydantic-settings>=2.13.1",
+    "scikit-learn>=1.8.0",
+    "tensorflow>=2.20.0",
+    "uvicorn[standard]>=0.41.0",
+]

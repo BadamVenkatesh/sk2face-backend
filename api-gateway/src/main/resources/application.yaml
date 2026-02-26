@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      routes:
+        # ---------------------------
+        # USER SERVICE
+        # ---------------------------
+        - id: user-service
+          uri: lb://SK2FACE-USER-SERVICE
+          predicates:
+            - Path=/api/users/**
+
+        # ---------------------------
+        # MATCH SERVICE
+        # ---------------------------
+        - id: match-service
+          uri: lb://SK2FACE-MATCH-SERVICE
+          predicates:
+            - Path=/api/match/**
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders: "*"
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://registry:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
