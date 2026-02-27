@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest request) {
 
         UserEntity user = new UserEntity();
+        user.setUserId(request.getUserId());
         user.setEmployeeId(request.getEmployeeId());
         user.setFullName(request.getFullName());
         user.setOfficialEmail(request.getOfficialEmail());
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getUserById(Long id) {
+    public UserResponse getUserById(String id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         return mapToResponse(user);
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(Long id, UserRequest request) {
+    public UserResponse updateUser(String id, UserRequest request) {
 
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deactivateUser(Long id) {
+    public void deactivateUser(String id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         userRepository.deleteById(user.getUserId());

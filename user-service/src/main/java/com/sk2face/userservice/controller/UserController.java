@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable String id){
         return ResponseEntity.ok(
                 responseBuilder.success(userService.getUserById(id))
         );
@@ -44,7 +44,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody UserRequest request) {
         return ResponseEntity.ok(
                 responseBuilder.success(userService.updateUser(id, request))
@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deactivateUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deactivateUser(@PathVariable String id) {
         userService.deactivateUser(id);
         return ResponseEntity.noContent().build();
     }

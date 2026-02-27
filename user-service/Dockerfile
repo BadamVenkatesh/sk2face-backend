@@ -1,13 +1,19 @@
-# ---- Stage 1: Build ----
-FROM maven:3.9.6-eclipse-temurin-17 AS builder
+# ---- Stage 1: Cache Dependencies ----
+FROM maven:3.9.6-eclipse-temurin-21 AS deps
 WORKDIR /app
 COPY pom.xml .
-COPY src ./src
-RUN mvn clean package -DskipTests
+COPY .mvn .mvn
+COPY mvnw .
+RUN mvn dependency:go-offline -B -q
 
-# ---- Stage 2: Run ----
-FROM eclipse-temurin:17-jdk-alpine
+# ---- Stage 2: Build ----
+FROM deps AS builder
+COPY src ./src
+RUN mvn clean package -DskipTests -q
+
+# ---- Stage 3: Run ----
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8082
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
