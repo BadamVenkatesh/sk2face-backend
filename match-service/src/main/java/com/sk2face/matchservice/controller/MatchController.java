@@ -27,7 +27,6 @@ public class MatchController {
             @RequestParam("image") org.springframework.web.multipart.MultipartFile image,
             @RequestHeader("X-USER-ID") String userIdHeader
     ) throws java.io.IOException {
-        Long userId = Long.parseLong(userIdHeader);
 
         // We use /app/data because the ML service mounts to /app/data
         String tempDir = "/app/data";
@@ -43,7 +42,7 @@ public class MatchController {
         image.transferTo(savedFile);
 
         MatchResponseDto result =
-                service.processMatch(savedFile.getAbsolutePath(), userId);
+                service.processMatch(savedFile.getAbsolutePath(), userIdHeader);
         return ResponseEntity.ok(responseBuilder.success(result));
     }
 

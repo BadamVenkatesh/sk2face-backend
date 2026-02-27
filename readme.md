@@ -263,15 +263,10 @@ All endpoints under `/api/match/` are protected and require a valid JWT token.
 * `Authorization: Bearer <access_token>`
 
 ### 3.1 `POST /api/match`
-Submit an image URL to find the top matching faces.
+Submit an image file to find the top matching faces.
 
-**Request Body** (`application/json`):
-```json
-{
-  "imageUrl": "/app/data/photos/m1-004-01.jpg"
-}
-```
-*(Note: imageUrl should be an absolute path strictly matching the ML service's internal expected structure.)*
+**Request Body** (`multipart/form-data`):
+* `image` (File): The image file to be matched against the database.
 
 **Responses**:
 * `200 OK`: Match completed successfully.
