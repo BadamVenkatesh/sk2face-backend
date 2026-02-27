@@ -274,9 +274,18 @@ Submit an image file to find the top matching faces.
 {
   "status": "SUCCESS",
   "data": {
-    "match1": "http://localhost:9090/static/photos/img1.jpg",
-    "match2": "http://localhost:9090/static/photos/img2.jpg",
-    "match3": "http://localhost:9090/static/photos/img3.jpg"
+    "match1": {
+      "url": "http://localhost:9090/static/photos/img1.jpg",
+      "score": 0.95
+    },
+    "match2": {
+      "url": "http://localhost:9090/static/photos/img2.jpg",
+      "score": 0.85
+    },
+    "match3": {
+      "url": "http://localhost:9090/static/photos/img3.jpg",
+      "score": 0.75
+    }
   },
   "timestamp": "...",
   "traceId": "..."
@@ -300,9 +309,18 @@ Retrieve a paginated historical list of match requests for the currently authent
       {
         "id": 1,
         "inputImageUrl": "/app/data/photos/m1-004-01.jpg",
-        "match1": "http://localhost:9090/static/photos/img1.jpg",
-        "match2": "http://localhost:9090/static/photos/img2.jpg",
-        "match3": "http://localhost:9090/static/photos/img3.jpg",
+        "match1": {
+          "url": "http://localhost:9090/static/photos/img1.jpg",
+          "score": 0.95
+        },
+        "match2": {
+          "url": "http://localhost:9090/static/photos/img2.jpg",
+          "score": 0.85
+        },
+        "match3": {
+          "url": "http://localhost:9090/static/photos/img3.jpg",
+          "score": 0.75
+        },
         "status": "COMPLETED",
         "createdAt": "2026-02-27T10:05:00"
       }
