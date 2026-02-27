@@ -1,9 +1,11 @@
 spring:
+  application:
+    name: sk2face-auth-service
   datasource:
-    url: jdbc:h2:mem:authdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:authdb;DB_CLOSE_DELAY=-1;MODE=MYSQL}
+    username: ${SPRING_DATASOURCE_USERNAME:sa}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
   jpa:
     hibernate:
       ddl-auto: update
@@ -17,9 +19,15 @@ spring:
       path: /h2-console
 
 server:
-  port: 8082
+  port: 8081
 
 jwt:
+  secret: sk2face-super-secret-jwt-key-badam-sunny-shiva
   access-token-validity-seconds: 900        # 15 minutes
   refresh-token-validity-seconds: 2592000   # 30 days
   issuer: auth-service
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}

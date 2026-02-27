@@ -1,5 +1,7 @@
 package com.sk2face.authservice.service;
 
+import com.sk2face.authservice.client.UserRequest;
+import com.sk2face.authservice.client.UserServiceClient;
 import com.sk2face.authservice.dto.AuthResponse;
 import com.sk2face.authservice.dto.LoginRequest;
 import com.sk2face.authservice.dto.RegisterRequest;
@@ -38,6 +40,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final UserServiceClient userServiceClient;
 
     @Value("${jwt.refresh-token-validity-seconds}")
     private long refreshValiditySeconds;
@@ -47,13 +50,15 @@ public class AuthService {
             JtiBlacklistRepository jtiBlacklistRepository,
             JwtService jwtService,
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            UserServiceClient userServiceClient) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.jtiBlacklistRepository = jtiBlacklistRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.userServiceClient = userServiceClient;
     }
 
     // ── Register ──────────────────────────────────────────────────────
@@ -70,6 +75,26 @@ public class AuthService {
 
         user = userRepository.save(user);
         log.info("Registered user: {} (uuid: {})", user.getUsername(), user.getUuid());
+
+        // Call user-service to create the user profile
+        try {
+            UserRequest userRequest = UserRequest.builder()
+                    .userId(user.getUuid())
+                    .employeeId(req.getEmployeeId())
+                    .fullName(req.getFullName())
+                    .officialEmail(req.getOfficialEmail())
+                    .designation(req.getDesignation())
+                    .departmentName(req.getDepartmentName())
+                    .phoneNumber(req.getPhoneNumber())
+                    .build();
+            userServiceClient.createUser(userRequest);
+            log.info("User profile created in user-service for uuid: {}", user.getUuid());
+        } catch (Exception e) {
+            log.error("Failed to create user profile in user-service for uuid: {}. Error: {}",
+                    user.getUuid(), e.getMessage());
+            throw new RuntimeException("Registration succeeded but user profile creation failed", e);
+        }
+
         return user;
     }
 

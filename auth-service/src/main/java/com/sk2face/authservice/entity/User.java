@@ -16,7 +16,11 @@ import java.time.Instant;
 public class User {
 
     @Id
-    @Column(length = 36, updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
+    private Long id;
+
+    @Column(length = 36, updatable = false, nullable = false, unique = true)
     private String uuid;
 
     @Column(unique = true, nullable = false)
