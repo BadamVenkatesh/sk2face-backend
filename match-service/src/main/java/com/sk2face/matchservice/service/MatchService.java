@@ -24,7 +24,7 @@ public class MatchService {
     private final MatchRepository repository;
     private final MlServiceClient mlServiceClient;
 
-    public MatchResponseDto processMatch(String imageUrl, Long userId) {
+    public MatchResponseDto processMatch(String imageUrl, String userId) {
 
         Map<String, String> request = Map.of("image_path", imageUrl);
 
@@ -62,7 +62,7 @@ public class MatchService {
         );
     }
     public Page<MatchHistoryDto> getUserMatchHistory(
-            Long userId,
+            String userId,
             int page,
             int size
     ) {
