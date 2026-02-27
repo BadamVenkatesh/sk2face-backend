@@ -147,6 +147,8 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
     ports:
       - "8083:8083"
+    volumes:
+      - /home/badam/Downloads/tempi:/app/data
     networks:
       - sk2face-network
 

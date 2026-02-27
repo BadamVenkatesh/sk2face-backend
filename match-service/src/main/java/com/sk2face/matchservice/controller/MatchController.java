@@ -22,13 +22,28 @@ public class MatchController {
     private final MatchService service;
     private final ResponseBuilder responseBuilder;
 
-    @PostMapping
+    @PostMapping(consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<MatchResponseDto>> match(
-            @Valid @RequestBody MatchRequestDto request,
+            @RequestParam("image") org.springframework.web.multipart.MultipartFile image,
             @RequestHeader("X-USER-ID") String userIdHeader
-    ) {
+    ) throws java.io.IOException {
+        Long userId = Long.parseLong(userIdHeader);
+
+        // We use /app/data because the ML service mounts to /app/data
+        String tempDir = "/app/data";
+        java.io.File directory = new java.io.File(tempDir);
+        if (!directory.exists()) {
+             // Fallback for local execution
+             tempDir = System.getProperty("java.io.tmpdir");
+             directory = new java.io.File(tempDir);
+        }
+
+        String filename = java.util.UUID.randomUUID().toString() + "_" + image.getOriginalFilename();
+        java.io.File savedFile = new java.io.File(directory, filename);
+        image.transferTo(savedFile);
+
         MatchResponseDto result =
-                service.processMatch(request.getImageUrl(), userIdHeader);
+                service.processMatch(savedFile.getAbsolutePath(), userId);
         return ResponseEntity.ok(responseBuilder.success(result));
     }
 
