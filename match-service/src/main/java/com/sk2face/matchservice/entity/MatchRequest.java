@@ -14,7 +14,7 @@ public class MatchRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String userId;
     private String inputImageUrl;
     private String matchResult1;
     private String matchResult2;

@@ -1,25 +1,54 @@
-version: '3.8'
-
 services:
+
+  # ---------------------------
+  # AUTH DATABASE
+  # ---------------------------
+  auth-mysql:
+    image: mysql:8.3.0
+    container_name: sk2face-auth-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: sk2face_auth
+      MYSQL_USER: sk2face
+      MYSQL_PASSWORD: sk2face123
+    ports:
+      - "3308:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sk2face", "-psk2face123" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - sk2face-network
 
   # ---------------------------
   # USER DATABASE
   # ---------------------------
-#  user-mysql:
-#    image: mysql:8.3.0
-#    container_name: sk2face-user-mysql
-#    restart: always
-#    environment:
-#      MYSQL_ROOT_PASSWORD: root123
-#      MYSQL_DATABASE: sk2face_user
-#      MYSQL_USER: sk2face
-#      MYSQL_PASSWORD: sk2face123
-#    ports:
-#      - "3306:3306"
-#    volumes:
-#      - user-mysql-data:/var/lib/mysql
-#    networks:
-#      - sk2face-network
+  user-mysql:
+    image: mysql:8.3.0
+    container_name: sk2face-user-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: sk2face_user
+      MYSQL_USER: sk2face
+      MYSQL_PASSWORD: sk2face123
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sk2face", "-psk2face123" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - user-mysql-data:/var/lib/mysql
+    networks:
+      - sk2face-network
 
   # ---------------------------
   # MATCH DATABASE
@@ -34,7 +63,7 @@ services:
       MYSQL_USER: sk2face
       MYSQL_PASSWORD: sk2face123
     ports:
-      - "3307:3306"
+      - "3309:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "sk2face", "-psk2face123" ]
       interval: 10s
@@ -50,38 +79,72 @@ services:
   # EUREKA REGISTRY
   # ---------------------------
   registry:
-#    build: ./sk2face-eureka-server
-#    container_name: sk2face-registry
     image: sk2face-backend-registry
+    container_name: sk2face-registry
     ports:
       - "8761:8761"
     networks:
       - sk2face-network
 
   # ---------------------------
+  # AUTH SERVICE
+  # ---------------------------
+  auth-service:
+    build: ./auth-service
+    container_name: sk2face-auth-service
+    depends_on:
+      auth-mysql:
+        condition: service_healthy
+      registry:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://auth-mysql:3306/sk2face_auth
+      SPRING_DATASOURCE_USERNAME: sk2face
+      SPRING_DATASOURCE_PASSWORD: sk2face123
+      SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
+      EUREKA_URL: http://registry:8761/eureka/
+    ports:
+      - "8081:8081"
+    networks:
+      - sk2face-network
+
+  # ---------------------------
   # USER SERVICE
   # ---------------------------
-#  user-service:
-#    build: ./user-service
-#    container_name: sk2face-user-service
-#    depends_on:
-#      - user-mysql
-#      - registry
-#    ports:
-#      - "8082:8082"
-#    networks:
-#      - sk2face-network
+  user-service:
+    build: ./user-service
+    container_name: sk2face-user-service
+    depends_on:
+      user-mysql:
+        condition: service_healthy
+      registry:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://user-mysql:3306/sk2face_user
+      SPRING_DATASOURCE_USERNAME: sk2face
+      SPRING_DATASOURCE_PASSWORD: sk2face123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
+    ports:
+      - "8082:8082"
+    networks:
+      - sk2face-network
 
   # ---------------------------
   # MATCH SERVICE
   # ---------------------------
   match-service:
-#    build: ./match-service
-    image: sk2face-backend-match-service
-#    container_name: sk2face-match-service
+    build: ./match-service
+    container_name: sk2face-match-service
     depends_on:
-      - match-mysql
-      - registry
+      match-mysql:
+        condition: service_healthy
+      registry:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://match-mysql:3306/sk2face_match
+      SPRING_DATASOURCE_USERNAME: sk2face
+      SPRING_DATASOURCE_PASSWORD: sk2face123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
     ports:
       - "8083:8083"
     networks:
@@ -91,21 +154,24 @@ services:
   # API GATEWAY
   # ---------------------------
   api-gateway:
-    image: sk2face-backend-api-gateway
-#    container_name: sk2face-api-gateway
+    build: ./api-gateway
+    container_name: sk2face-api-gateway
     depends_on:
       - registry
+      - auth-service
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://registry:8761/eureka/
     ports:
       - "8080:8080"
     networks:
       - sk2face-network
 
-    # ---------------------------
+  # ---------------------------
   # ML SERVICE
   # ---------------------------
   ml-service:
     image: sk2face-backend-ml-service
-#    container_name: sk2face-ml-service
+    container_name: sk2face-ml-service
     depends_on:
       - registry
     ports:
@@ -121,5 +187,6 @@ networks:
     driver: bridge
 
 volumes:
+  auth-mysql-data:
   user-mysql-data:
   match-mysql-data:

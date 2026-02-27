@@ -27,9 +27,8 @@ public class MatchController {
             @Valid @RequestBody MatchRequestDto request,
             @RequestHeader("X-USER-ID") String userIdHeader
     ) {
-        Long userId = Long.parseLong(userIdHeader);
         MatchResponseDto result =
-                service.processMatch(request.getImageUrl(), userId);
+                service.processMatch(request.getImageUrl(), userIdHeader);
         return ResponseEntity.ok(responseBuilder.success(result));
     }
 
@@ -40,10 +39,8 @@ public class MatchController {
             @RequestParam(defaultValue = "10") int size
     ) {
 
-        Long userId = Long.parseLong(userIdHeader);
-
         Page<MatchHistoryDto> history =
-                service.getUserMatchHistory(userId, page, size);
+                service.getUserMatchHistory(userIdHeader, page, size);
 
         return ResponseEntity.ok(
                 responseBuilder.success(history)

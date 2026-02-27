@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MatchRepository extends JpaRepository<MatchRequest, Long> {
-    Page<MatchRequest> findByUserId(Long userId, Pageable pageable);
+    Page<MatchRequest> findByUserId(String userId, Pageable pageable);
 }
