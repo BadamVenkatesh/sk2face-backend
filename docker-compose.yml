@@ -172,7 +172,8 @@ services:
   # ML SERVICE
   # ---------------------------
   ml-service:
-    image: sk2face-backend-ml-service
+    # image: sk2face-backend-ml-service
+    build: ./ml-service
     container_name: sk2face-ml-service
     depends_on:
       - registry

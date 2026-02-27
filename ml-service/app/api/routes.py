@@ -43,12 +43,15 @@ async def match_image(req: MatchRequest, request: Request):
         else:
             domain = f"{request.url.scheme}://{host}"
 
-        urls = [
-            f"{domain}/static/photos/{r['filename']}"
+        matches = [
+            {
+                "url": f"{domain}/static/photos/{r['filename']}",
+                "score": r['score']
+            }
             for r in results
         ]
 
-        return {"matches": urls}
+        return {"matches": matches}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

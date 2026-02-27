@@ -11,9 +11,9 @@ public class MatchHistoryDto {
 
     private Long id;
     private String inputImageUrl;
-    private String match1;
-    private String match2;
-    private String match3;
+    private MatchResultDto match1;
+    private MatchResultDto match2;
+    private MatchResultDto match3;
     private String status;
     private LocalDateTime createdAt;
 }
