@@ -37,6 +37,24 @@ spring:
           predicates:
             - Path=/api/match/**
 
+        # ---------------------------
+        # ML SERVICE STATIC FILES
+        # ---------------------------
+        - id: ml-service-static
+          uri: http://ml-service:9090
+          predicates:
+            - Path=/static/**
+
+        # ---------------------------
+        # ML SERVICE UPLOADED FILES (/app/data proxy)
+        # ---------------------------
+        - id: ml-service-app-data
+          uri: http://ml-service:9090
+          predicates:
+            - Path=/app/data/**
+          filters:
+            - RewritePath=/app/data/(?<segment>.*), /static/$\{segment}
+
       globalcors:
         corsConfigurations:
           '[/**]':

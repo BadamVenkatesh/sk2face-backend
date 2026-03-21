@@ -34,18 +34,9 @@ async def match_image(req: MatchRequest, request: Request):
         # ✅ Retrieve top matches
         results = retrieve_top_k(query_emb, k=3)
 
-        # ✅ Construct static URLs dynamically
-        host = request.url.hostname
-        port = request.url.port
-
-        if port:
-            domain = f"{request.url.scheme}://{host}:{port}"
-        else:
-            domain = f"{request.url.scheme}://{host}"
-
         matches = [
             {
-                "url": f"{domain}/static/photos/{r['filename']}",
+                "url": f"/static/photos/{r['filename']}",
                 "score": r['score']
             }
             for r in results
